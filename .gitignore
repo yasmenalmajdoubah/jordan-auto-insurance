@@ -1,0 +1,29 @@
+# Root
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+.vs/
+.idea/
+
+# Backend
+backend/bin/
+backend/obj/
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+backend/Storage/
+backend/logs/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+
+# Secrets / env
+.env
+.env.*
+**/appsettings.*.local.json
+*.pfx
+*.pem
