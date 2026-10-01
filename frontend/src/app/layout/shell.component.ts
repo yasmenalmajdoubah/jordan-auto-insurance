@@ -15,14 +15,16 @@ import { AuthService } from '../core/services/auth.service';
         </div>
         <nav>
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">لوحة البداية</a>
+          <a routerLink="/insureds" routerLinkActive="active">المؤمن لهم</a>
+          <a routerLink="/vehicles" routerLinkActive="active">المركبات</a>
         </nav>
         <button type="button" class="logout" (click)="auth.logout()">خروج</button>
       </aside>
       <main>
         <header>
           <div>
-            <h1>المرحلة 0 — تأسيس النظام</h1>
-            <p>Angular + ASP.NET Core + JWT + Roles + Audit</p>
+            <h1>نظام تأمين المركبات</h1>
+            <p>المرحلة 1 — المؤمن لهم والمركبات</p>
           </div>
           @if (auth.currentUser(); as u) {
             <div class="user">{{ u.fullName }} · {{ u.role }}</div>
