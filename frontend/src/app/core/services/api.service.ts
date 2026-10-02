@@ -26,10 +26,11 @@ import {
   Vehicle,
   VehicleProfile
 } from '../models/insurance.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  readonly base = 'http://localhost:5213/api';
+  readonly base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

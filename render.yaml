@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: jordan-auto-insurance
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /swagger/index.html
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Jwt__Key
+        generateValue: true

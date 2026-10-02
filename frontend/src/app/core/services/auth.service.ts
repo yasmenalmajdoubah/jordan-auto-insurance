@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface LoginResponse {
   token: string;
@@ -13,7 +14,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:5213/api';
+  private readonly apiUrl = environment.apiUrl;
   readonly currentUser = signal<LoginResponse | null>(this.readStored());
 
   constructor(private http: HttpClient, private router: Router) {}
