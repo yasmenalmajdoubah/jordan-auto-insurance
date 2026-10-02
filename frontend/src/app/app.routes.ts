@@ -19,6 +19,11 @@ import { AccidentDetailComponent } from './pages/accidents/accident-detail.compo
 import { DepreciationRulesComponent } from './pages/depreciation/depreciation-rules.component';
 import { ClaimsListComponent } from './pages/claims/claims-list.component';
 import { ClaimDetailComponent } from './pages/claims/claim-detail.component';
+import { RecoveryListComponent } from './pages/recovery/recovery-list.component';
+import { RecoveryDetailComponent } from './pages/recovery/recovery-detail.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { UsersComponent } from './pages/users/users.component';
+import { AuditComponent } from './pages/audit/audit.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -28,6 +33,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: HomeComponent },
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'insureds', component: InsuredsListComponent },
       { path: 'insureds/new', component: InsuredFormComponent },
       { path: 'insureds/:id/edit', component: InsuredFormComponent },
@@ -46,7 +52,11 @@ export const routes: Routes = [
       { path: 'accidents/new', component: AccidentFormComponent },
       { path: 'accidents/:id', component: AccidentDetailComponent },
       { path: 'claims', component: ClaimsListComponent },
-      { path: 'claims/:id', component: ClaimDetailComponent }
+      { path: 'claims/:id', component: ClaimDetailComponent },
+      { path: 'recovery', component: RecoveryListComponent },
+      { path: 'recovery/:id', component: RecoveryDetailComponent },
+      { path: 'users', component: UsersComponent },
+      { path: 'audit', component: AuditComponent }
     ]
   },
   { path: '**', redirectTo: '' }

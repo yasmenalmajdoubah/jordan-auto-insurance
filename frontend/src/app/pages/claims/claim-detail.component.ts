@@ -65,6 +65,32 @@ import { ClaimRecord, Settlement } from '../../core/models/insurance.models';
               </div>
             }
           </section>
+
+          <section class="card">
+            <h3>الاسترداد على شركة أخرى (Recovery)</h3>
+            @if (c.recoveryClaim; as r) {
+              <p>الشركة: {{ r.otherInsurerName }}</p>
+              <p>المبلغ: {{ r.claimedAmount }} د.أ</p>
+              <p>الحالة: {{ r.status }}</p>
+              <a class="btn" [routerLink]="['/recovery', r.id]">فتح ملف الاسترداد</a>
+            } @else {
+              <div class="form">
+                <label>شركة التأمين الأخرى
+                  <input [(ngModel)]="recovery.otherInsurerName" name="otherInsurerName" />
+                </label>
+                <label>رقم وثيقتهم
+                  <input [(ngModel)]="recovery.otherPolicyNumber" name="otherPolicyNumber" />
+                </label>
+                <label>قيمة المطالبة
+                  <input type="number" [(ngModel)]="recovery.claimedAmount" name="claimedAmount" />
+                </label>
+                <label>ملاحظات
+                  <input [(ngModel)]="recovery.notes" name="recoveryNotes" />
+                </label>
+                <button type="button" class="btn primary" (click)="createRecovery()" [disabled]="busy()">إنشاء مطالبة استرداد</button>
+              </div>
+            }
+          </section>
         </div>
       }
     </div>
@@ -93,6 +119,15 @@ export class ClaimDetailComponent implements OnInit {
   busy = signal(false);
   private id = 0;
   settlement = { claimAmount: 0, deductible: 0, otherAdjustments: 0, status: 'Draft' };
+  recovery = {
+    otherInsurerName: '',
+    otherPolicyNumber: '',
+    accidentNumber: '',
+    claimedAmount: 0,
+    paidAmount: 0,
+    settlementRef: '',
+    notes: ''
+  };
 
   constructor(private api: ApiService, private route: ActivatedRoute) {}
 
@@ -106,6 +141,8 @@ export class ClaimDetailComponent implements OnInit {
       next: (c) => {
         this.claim.set(c);
         this.settlement.claimAmount = c.claimAmount;
+        this.recovery.claimedAmount = c.claimAmount;
+        this.recovery.accidentNumber = c.accident?.accidentNumber || '';
       },
       error: () => this.error.set('تعذر تحميل المطالبة')
     });
@@ -122,6 +159,25 @@ export class ClaimDetailComponent implements OnInit {
       error: (err) => {
         this.busy.set(false);
         this.error.set(err?.error?.message || 'تعذر إنشاء المخالصة');
+      }
+    });
+  }
+
+  createRecovery(): void {
+    if (!this.recovery.otherInsurerName) {
+      this.error.set('أدخل اسم شركة التأمين الأخرى');
+      return;
+    }
+    this.busy.set(true);
+    this.api.createRecovery(this.id, this.recovery).subscribe({
+      next: (r) => {
+        this.busy.set(false);
+        this.ok.set('تم إنشاء مطالبة الاسترداد');
+        this.load();
+      },
+      error: (err) => {
+        this.busy.set(false);
+        this.error.set(err?.error?.message || 'تعذر إنشاء الاسترداد');
       }
     });
   }

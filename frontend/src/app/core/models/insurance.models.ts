@@ -278,5 +278,69 @@ export interface ClaimRecord {
   createdAt?: string;
   accident?: Accident | null;
   settlement?: Settlement | null;
+  recoveryClaim?: RecoveryClaim | null;
+}
+
+export interface RecoveryClaim {
+  id: number;
+  claimId: number;
+  otherInsurerName: string;
+  otherPolicyNumber?: string | null;
+  accidentNumber: string;
+  claimedAmount: number;
+  paidAmount: number;
+  status: string | number;
+  settlementRef?: string | null;
+  notes?: string | null;
+  createdAt?: string;
+  submittedAt?: string | null;
+  claim?: ClaimRecord | null;
+}
+
+export interface DashboardSummary {
+  activePolicies: number;
+  expiredPolicies: number;
+  newPolicies: number;
+  accidentsToday: number;
+  openAccidents: number;
+  openClaims: number;
+  pendingClaims: number;
+  approvedClaims: number;
+  rejectedClaims: number;
+  settledClaims: number;
+  totalPaidClaims: number;
+  outstandingClaims: number;
+  recoveryAmount: number;
+  pendingRecovery: number;
+  recoveryPaid: number;
+  claimsByMonth: { month: string; count: number }[];
+  accidentsByMonth: { month: string; count: number }[];
+  accidentsByVehicleUsage: { usage: string; count: number }[];
+  claimsByInsuranceType: { type: string; count: number }[];
+  claimsByStatus: { status: string; count: number }[];
+  comprehensiveVsThirdParty: { comprehensive: number; thirdParty: number };
+  recoveryByStatus: { status: string; count: number; amount: number }[];
+}
+
+export interface AppUser {
+  id: number;
+  userName: string;
+  fullName: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  userName: string;
+  action: string;
+  entityType: string;
+  entityId?: string | null;
+  oldValue?: string | null;
+  newValue?: string | null;
+  ipAddress?: string | null;
+  createdAt: string;
 }
 

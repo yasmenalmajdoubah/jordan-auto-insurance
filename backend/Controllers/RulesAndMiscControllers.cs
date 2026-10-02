@@ -130,8 +130,19 @@ public class AuditController(AppDbContext db) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = "Admin,Manager")]
-    public async Task<IActionResult> Get([FromQuery] int take = 100)
-        => Ok(await db.AuditLogs.OrderByDescending(a => a.Id).Take(take).ToListAsync());
+    public async Task<IActionResult> Get([FromQuery] int take = 100, [FromQuery] string? entityType = null, [FromQuery] string? q = null)
+    {
+        var query = db.AuditLogs.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(entityType))
+            query = query.Where(a => a.EntityType == entityType);
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(a =>
+                a.UserName.Contains(q) ||
+                a.Action.Contains(q) ||
+                a.EntityType.Contains(q) ||
+                (a.EntityId != null && a.EntityId.Contains(q)));
+        return Ok(await query.OrderByDescending(a => a.Id).Take(Math.Clamp(take, 1, 500)).ToListAsync());
+    }
 }
 
 [ApiController]
@@ -155,20 +166,27 @@ public class DashboardController(AppDbContext db) : ControllerBase
             c.RecoveryClaim.Status is RecoveryStatus.Draft or RecoveryStatus.Submitted or RecoveryStatus.UnderReview)
             .Sum(c => c.RecoveryClaim!.ClaimedAmount);
 
+        var vehicleIds = accidents.Select(a => a.VehicleId).Distinct().ToList();
+        var vehicles = await db.Vehicles.Where(v => vehicleIds.Contains(v.Id)).ToListAsync();
+        var vehicleMap = vehicles.ToDictionary(v => v.Id, v => v.UsageType.ToString());
+
         return Ok(new
         {
             activePolicies = policies.Count(p => p.Status == PolicyStatus.Active),
             expiredPolicies = policies.Count(p => p.Status == PolicyStatus.Expired || p.EndDate < now),
             newPolicies = policies.Count(p => p.IssueDate >= now.AddDays(-30)),
             accidentsToday = accidents.Count(a => a.AccidentDateTime.Date == now.Date),
+            openAccidents = accidents.Count(a => a.Status is AccidentStatus.Open or AccidentStatus.UnderReview),
             openClaims = claims.Count(c => c.Status is ClaimStatus.Draft or ClaimStatus.Submitted or ClaimStatus.UnderReview),
             pendingClaims = claims.Count(c => c.Status == ClaimStatus.UnderReview),
             approvedClaims = claims.Count(c => c.Status == ClaimStatus.Approved),
             rejectedClaims = claims.Count(c => c.Status == ClaimStatus.Rejected),
+            settledClaims = claims.Count(c => c.Status == ClaimStatus.Settled),
             totalPaidClaims = paid,
             outstandingClaims = outstanding,
             recoveryAmount = recovery,
             pendingRecovery,
+            recoveryPaid = claims.Where(c => c.RecoveryClaim != null).Sum(c => c.RecoveryClaim!.PaidAmount),
             claimsByMonth = Enumerable.Range(0, 6).Select(i =>
             {
                 var month = now.AddMonths(-i);
@@ -178,18 +196,33 @@ public class DashboardController(AppDbContext db) : ControllerBase
                     count = claims.Count(c => c.CreatedAt.Year == month.Year && c.CreatedAt.Month == month.Month)
                 };
             }).Reverse(),
+            accidentsByMonth = Enumerable.Range(0, 6).Select(i =>
+            {
+                var month = now.AddMonths(-i);
+                return new
+                {
+                    month = month.ToString("yyyy-MM"),
+                    count = accidents.Count(a => a.AccidentDateTime.Year == month.Year && a.AccidentDateTime.Month == month.Month)
+                };
+            }).Reverse(),
             accidentsByVehicleUsage = accidents
-                .GroupBy(a => a.VehicleId)
-                .Select(g => g.Key)
-                .ToList(),
+                .GroupBy(a => vehicleMap.GetValueOrDefault(a.VehicleId, "Unknown"))
+                .Select(g => new { usage = g.Key, count = g.Count() }),
             claimsByInsuranceType = policies
                 .GroupBy(p => p.InsuranceType.ToString())
                 .Select(g => new { type = g.Key, count = g.Count() }),
+            claimsByStatus = claims
+                .GroupBy(c => c.Status.ToString())
+                .Select(g => new { status = g.Key, count = g.Count() }),
             comprehensiveVsThirdParty = new
             {
                 comprehensive = policies.Count(p => p.InsuranceType == InsuranceType.Comprehensive),
                 thirdParty = policies.Count(p => p.InsuranceType == InsuranceType.ThirdParty)
-            }
+            },
+            recoveryByStatus = claims
+                .Where(c => c.RecoveryClaim != null)
+                .GroupBy(c => c.RecoveryClaim!.Status.ToString())
+                .Select(g => new { status = g.Key, count = g.Count(), amount = g.Sum(x => x.RecoveryClaim!.ClaimedAmount) })
         });
     }
 }

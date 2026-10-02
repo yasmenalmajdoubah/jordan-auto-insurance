@@ -51,7 +51,7 @@ import { InsuredProfile } from '../../core/models/insurance.models';
             <h3>سجل الوثائق</h3>
             @for (pol of p.policies; track pol.id) {
               <div class="row"><span>{{ pol.policyNumber }}</span><span>{{ pol.status }}</span></div>
-            } @empty { <p class="muted">لا يوجد وثائق بعد (المرحلة 2)</p> }
+            } @empty { <p class="muted">لا يوجد وثائق بعد</p> }
           </section>
 
           <section class="card">

@@ -4,12 +4,15 @@ import {
   Accident,
   AccidentDocument,
   AccidentPayment,
+  AppUser,
+  AuditLogEntry,
   ClaimRecord,
   CoverageCheckLog,
   CoverageResult,
   CreateAccidentResponse,
   DamageItem,
   DamageSummary,
+  DashboardSummary,
   DepreciationRule,
   DocumentType,
   InjuryClaim,
@@ -18,6 +21,7 @@ import {
   Policy,
   PremiumCalculationResult,
   PricingRule,
+  RecoveryClaim,
   Settlement,
   Vehicle,
   VehicleProfile
@@ -210,5 +214,53 @@ export class ApiService {
 
   downloadSettlementPdf(settlementId: number) {
     return this.http.get(`${this.base}/claims/settlements/${settlementId}/pdf`, { responseType: 'blob' });
+  }
+
+  getRecoveries() {
+    return this.http.get<RecoveryClaim[]>(`${this.base}/claims/recoveries`);
+  }
+
+  getRecovery(id: number) {
+    return this.http.get<RecoveryClaim>(`${this.base}/claims/recoveries/${id}`);
+  }
+
+  createRecovery(claimId: number, body: any) {
+    return this.http.post<RecoveryClaim>(`${this.base}/claims/${claimId}/recovery`, body);
+  }
+
+  updateRecoveryStatus(recoveryId: number, body: { status: string; paidAmount?: number; notes?: string }) {
+    return this.http.put<RecoveryClaim>(`${this.base}/claims/recoveries/${recoveryId}/status`, body);
+  }
+
+  downloadRecoveryPdf(recoveryId: number) {
+    return this.http.get(`${this.base}/claims/recoveries/${recoveryId}/pdf`, { responseType: 'blob' });
+  }
+
+  getDashboardSummary() {
+    return this.http.get<DashboardSummary>(`${this.base}/dashboard/summary`);
+  }
+
+  getRoles() {
+    return this.http.get<string[]>(`${this.base}/auth/roles`);
+  }
+
+  getUsers() {
+    return this.http.get<AppUser[]>(`${this.base}/auth/users`);
+  }
+
+  registerUser(body: { userName: string; fullName: string; email: string; password: string; role: string }) {
+    return this.http.post(`${this.base}/auth/register`, body);
+  }
+
+  updateUser(id: number, body: { fullName: string; email: string; role: string; isActive: boolean; newPassword?: string }) {
+    return this.http.put(`${this.base}/auth/users/${id}`, body);
+  }
+
+  getAuditLogs(opts?: { take?: number; entityType?: string; q?: string }) {
+    let params = new HttpParams();
+    if (opts?.take) params = params.set('take', opts.take);
+    if (opts?.entityType) params = params.set('entityType', opts.entityType);
+    if (opts?.q) params = params.set('q', opts.q);
+    return this.http.get<AuditLogEntry[]>(`${this.base}/audit`, { params });
   }
 }

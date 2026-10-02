@@ -97,6 +97,22 @@ public class ClaimsController(AppDbContext db, AuditService audit, PdfService pd
         return File(bytes, "application/pdf", $"settlement-{settlementId}.pdf");
     }
 
+    [HttpGet("recoveries")]
+    public async Task<IActionResult> GetRecoveries() =>
+        Ok(await db.RecoveryClaims
+            .Include(r => r.Claim)!.ThenInclude(c => c!.Accident)
+            .OrderByDescending(r => r.Id)
+            .ToListAsync());
+
+    [HttpGet("recoveries/{recoveryId:int}")]
+    public async Task<IActionResult> GetRecovery(int recoveryId)
+    {
+        var item = await db.RecoveryClaims
+            .Include(r => r.Claim)!.ThenInclude(c => c!.Accident)
+            .FirstOrDefaultAsync(r => r.Id == recoveryId);
+        return item is null ? NotFound() : Ok(item);
+    }
+
     [HttpPost("{id:int}/recovery")]
     [Authorize(Roles = "Admin,ClaimsOfficer,Manager")]
     public async Task<IActionResult> CreateRecovery(int id, [FromBody] RecoveryDto dto)
@@ -122,20 +138,23 @@ public class ClaimsController(AppDbContext db, AuditService audit, PdfService pd
         };
         db.RecoveryClaims.Add(recovery);
         await db.SaveChangesAsync();
+        await audit.LogAsync("Create", nameof(RecoveryClaim), recovery.Id.ToString(), null, recovery);
         return Ok(recovery);
     }
 
     [HttpPut("recoveries/{recoveryId:int}/status")]
     [Authorize(Roles = "Admin,ClaimsOfficer,Manager")]
-    public async Task<IActionResult> UpdateRecoveryStatus(int recoveryId, [FromBody] RecoveryStatus status)
+    public async Task<IActionResult> UpdateRecoveryStatus(int recoveryId, [FromBody] RecoveryStatusUpdateDto body)
     {
         var recovery = await db.RecoveryClaims.FindAsync(recoveryId);
         if (recovery is null) return NotFound();
         var old = recovery.Status;
-        recovery.Status = status;
-        if (status == RecoveryStatus.Submitted) recovery.SubmittedAt = DateTime.UtcNow;
+        recovery.Status = body.Status;
+        if (body.Status == RecoveryStatus.Submitted) recovery.SubmittedAt = DateTime.UtcNow;
+        if (body.PaidAmount.HasValue) recovery.PaidAmount = body.PaidAmount.Value;
+        if (body.Notes is not null) recovery.Notes = body.Notes;
         await db.SaveChangesAsync();
-        await audit.LogAsync("StatusChange", nameof(RecoveryClaim), recoveryId.ToString(), new { old }, new { status });
+        await audit.LogAsync("StatusChange", nameof(RecoveryClaim), recoveryId.ToString(), new { old }, new { body.Status, recovery.PaidAmount });
         return Ok(recovery);
     }
 
@@ -146,3 +165,5 @@ public class ClaimsController(AppDbContext db, AuditService audit, PdfService pd
         return File(bytes, "application/pdf", $"recovery-{recoveryId}.pdf");
     }
 }
+
+public record RecoveryStatusUpdateDto(RecoveryStatus Status, decimal? PaidAmount = null, string? Notes = null);

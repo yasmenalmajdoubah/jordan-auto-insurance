@@ -15,6 +15,7 @@ import { AuthService } from '../core/services/auth.service';
         </div>
         <nav>
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">لوحة البداية</a>
+          <a routerLink="/dashboard" routerLinkActive="active">لوحة الإدارة</a>
           <a routerLink="/insureds" routerLinkActive="active">المؤمن لهم</a>
           <a routerLink="/vehicles" routerLinkActive="active">المركبات</a>
           <a routerLink="/policies" routerLinkActive="active">وثائق التأمين</a>
@@ -22,6 +23,9 @@ import { AuthService } from '../core/services/auth.service';
           <a routerLink="/depreciation" routerLinkActive="active">قواعد الاستهلاك</a>
           <a routerLink="/accidents" routerLinkActive="active">الحوادث</a>
           <a routerLink="/claims" routerLinkActive="active">المطالبات</a>
+          <a routerLink="/recovery" routerLinkActive="active">الاسترداد</a>
+          <a routerLink="/users" routerLinkActive="active">المستخدمون</a>
+          <a routerLink="/audit" routerLinkActive="active">سجل التدقيق</a>
         </nav>
         <button type="button" class="logout" (click)="auth.logout()">خروج</button>
       </aside>
@@ -29,7 +33,6 @@ import { AuthService } from '../core/services/auth.service';
         <header>
           <div>
             <h1>نظام تأمين المركبات</h1>
-            <p>المرحلة 5 و 6 — الأضرار والمطالبات</p>
           </div>
           @if (auth.currentUser(); as u) {
             <div class="user">{{ u.fullName }} · {{ u.role }}</div>
@@ -63,7 +66,6 @@ import { AuthService } from '../core/services/auth.service';
       padding: 1.25rem 1.5rem; background: white; border-bottom: 1px solid #e2e8f0;
     }
     header h1 { margin: 0; font-size: 1.2rem; }
-    header p { margin: .2rem 0 0; color: #64748b; }
     .user { color: #0b7a5a; font-weight: 600; }
     .content { padding: 1.5rem; }
     @media (max-width: 800px) {

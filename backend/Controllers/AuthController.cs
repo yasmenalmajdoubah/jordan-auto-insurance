@@ -40,7 +40,28 @@ public class AuthController(AuthService auth, AppDbContext db) : ControllerBase
     [HttpGet("users")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Users() =>
-        Ok(await db.Users.Select(u => new { u.Id, u.UserName, u.FullName, u.Email, u.Role, u.IsActive }).ToListAsync());
+        Ok(await db.Users.Select(u => new { u.Id, u.UserName, u.FullName, u.Email, u.Role, u.IsActive, u.CreatedAt }).ToListAsync());
+
+    [HttpPut("users/{id:int}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
+    {
+        var user = await db.Users.FindAsync(id);
+        if (user is null) return NotFound();
+        if (!DbSeeder.Roles.Contains(request.Role))
+            return BadRequest(new { message = "Invalid role" });
+
+        var old = new { user.FullName, user.Email, user.Role, user.IsActive };
+        user.FullName = request.FullName;
+        user.Email = request.Email;
+        user.Role = request.Role;
+        user.IsActive = request.IsActive;
+        if (!string.IsNullOrWhiteSpace(request.NewPassword))
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+        await db.SaveChangesAsync();
+        return Ok(new { user.Id, user.UserName, user.FullName, user.Email, user.Role, user.IsActive });
+    }
 
     [HttpGet("me")]
     [Authorize]
@@ -51,3 +72,5 @@ public class AuthController(AuthService auth, AppDbContext db) : ControllerBase
         FullName = User.FindFirst("fullName")?.Value
     });
 }
+
+public record UpdateUserRequest(string FullName, string Email, string Role, bool IsActive, string? NewPassword = null);
