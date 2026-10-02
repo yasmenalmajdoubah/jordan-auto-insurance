@@ -62,5 +62,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasOne(c => c.RecoveryClaim)
             .WithOne(r => r.Claim)
             .HasForeignKey<RecoveryClaim>(r => r.ClaimId);
+
+        modelBuilder.Entity<CoverageCheckLog>()
+            .HasOne(c => c.Accident)
+            .WithMany(a => a.CoverageChecks)
+            .HasForeignKey(c => c.AccidentId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
     }
 }

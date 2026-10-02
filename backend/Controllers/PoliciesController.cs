@@ -12,14 +12,19 @@ namespace JordanAutoInsurance.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class PoliciesController(AppDbContext db, AuditService audit, PricingService pricing) : ControllerBase
+public class PoliciesController(AppDbContext db, AuditService audit, PricingService pricing, CoverageService coverage) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] PolicyStatus? status)
+    public async Task<IActionResult> GetAll([FromQuery] PolicyStatus? status, [FromQuery] string? q)
     {
-        var q = db.Policies.Include(p => p.Insured).Include(p => p.Vehicle).AsQueryable();
-        if (status.HasValue) q = q.Where(p => p.Status == status);
-        return Ok(await q.OrderByDescending(p => p.Id).ToListAsync());
+        var query = db.Policies.Include(p => p.Insured).Include(p => p.Vehicle).AsQueryable();
+        if (status.HasValue) query = query.Where(p => p.Status == status);
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(p =>
+                p.PolicyNumber.Contains(q) ||
+                (p.Insured != null && p.Insured.FullName.Contains(q)) ||
+                (p.Vehicle != null && p.Vehicle.PlateNumber.Contains(q)));
+        return Ok(await query.OrderByDescending(p => p.Id).ToListAsync());
     }
 
     [HttpGet("{id:int}")]
@@ -30,6 +35,33 @@ public class PoliciesController(AppDbContext db, AuditService audit, PricingServ
         return item is null ? NotFound() : Ok(item);
     }
 
+    [HttpGet("{id:int}/coverage-checks")]
+    public async Task<IActionResult> CoverageHistory(int id)
+    {
+        if (!await db.Policies.AnyAsync(p => p.Id == id)) return NotFound();
+        var logs = await db.CoverageCheckLogs
+            .Where(c => c.PolicyId == id)
+            .OrderByDescending(c => c.Id)
+            .Take(50)
+            .ToListAsync();
+        return Ok(logs);
+    }
+
+    [HttpPost("{id:int}/coverage-check")]
+    [Authorize(Roles = "Admin,Underwriter,ClaimsOfficer,AccidentOfficer,Manager")]
+    public async Task<IActionResult> CoverageCheck(int id, [FromBody] PolicyCoveragePreviewRequest request)
+    {
+        try
+        {
+            var result = await coverage.CheckPolicyPreviewAsync(id, request, User.Identity?.Name ?? "system");
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
     [HttpPost("calculate-premium")]
     public async Task<IActionResult> CalculatePremium([FromBody] PremiumCalculationRequest request)
         => Ok(await pricing.CalculateAsync(request));
@@ -38,6 +70,11 @@ public class PoliciesController(AppDbContext db, AuditService audit, PricingServ
     [Authorize(Roles = "Admin,Underwriter,Manager")]
     public async Task<IActionResult> Create([FromBody] PolicyDto dto)
     {
+        if (!await db.Insureds.AnyAsync(i => i.Id == dto.InsuredId))
+            return BadRequest(new { message = "المؤمن غير موجود" });
+        if (!await db.Vehicles.AnyAsync(v => v.Id == dto.VehicleId))
+            return BadRequest(new { message = "المركبة غير موجودة" });
+
         var number = string.IsNullOrWhiteSpace(dto.PolicyNumber)
             ? $"POL-{DateTime.UtcNow:yyyy}-{await db.Policies.CountAsync() + 1:D6}"
             : dto.PolicyNumber!;
@@ -58,7 +95,7 @@ public class PoliciesController(AppDbContext db, AuditService audit, PricingServ
             Coverages = dto.Coverages,
             Exclusions = dto.Exclusions,
             Status = dto.Status,
-            IssuedBy = dto.IssuedBy,
+            IssuedBy = string.IsNullOrWhiteSpace(dto.IssuedBy) ? (User.Identity?.Name ?? "system") : dto.IssuedBy,
             IssueDate = DateTime.UtcNow
         };
         db.Policies.Add(entity);
@@ -73,7 +110,9 @@ public class PoliciesController(AppDbContext db, AuditService audit, PricingServ
     {
         var entity = await db.Policies.FindAsync(id);
         if (entity is null) return NotFound();
-        var oldStatus = entity.Status;
+        var old = new { entity.Status, entity.StartDate, entity.EndDate, entity.Premium };
+        entity.InsuredId = dto.InsuredId;
+        entity.VehicleId = dto.VehicleId;
         entity.InsuranceType = dto.InsuranceType;
         entity.StartDate = dto.StartDate;
         entity.EndDate = dto.EndDate;
@@ -86,7 +125,7 @@ public class PoliciesController(AppDbContext db, AuditService audit, PricingServ
         entity.Exclusions = dto.Exclusions;
         entity.Status = dto.Status;
         await db.SaveChangesAsync();
-        await audit.LogAsync("Update", nameof(Policy), id.ToString(), new { oldStatus }, new { entity.Status });
+        await audit.LogAsync("Update", nameof(Policy), id.ToString(), old, new { entity.Status, entity.StartDate, entity.EndDate, entity.Premium });
         return Ok(entity);
     }
 }

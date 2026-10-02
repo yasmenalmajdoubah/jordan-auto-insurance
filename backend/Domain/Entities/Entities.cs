@@ -152,7 +152,7 @@ public class Accident
 public class CoverageCheckLog
 {
     public long Id { get; set; }
-    public int AccidentId { get; set; }
+    public int? AccidentId { get; set; }
     public Accident? Accident { get; set; }
     public int PolicyId { get; set; }
     public bool IsCovered { get; set; }

@@ -7,19 +7,20 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `
     <div class="home">
-      <h2>المرحلة 1 جاهزة محليًا</h2>
-      <p>تقدر تدير المؤمن لهم والمركبات، وتفتح ملف كل واحد مع سجلاته.</p>
+      <h2>المرحلة 3 و 4 جاهزتين محليًا</h2>
+      <p>راجعي الشاشات، وبعدين نرفع المراحل 2 و 3 و 4 معًا لما تقولي.</p>
       <div class="actions">
-        <a routerLink="/insureds">المؤمن لهم</a>
-        <a routerLink="/vehicles">المركبات</a>
+        <a routerLink="/pricing">قواعد التسعير</a>
+        <a routerLink="/accidents">الحوادث</a>
+        <a routerLink="/policies">الوثائق</a>
       </div>
       <ul>
-        <li>إضافة / تعديل / حذف مؤمن</li>
-        <li>ملف المؤمن: مركبات + وثائق + حوادث + مطالبات + دفعات</li>
-        <li>إضافة / تعديل / حذف مركبة</li>
-        <li>Vehicle Profile: تأمين + حوادث + مطالبات</li>
+        <li>تعديل نسب التسعير من الشاشة + حاسبة القسط</li>
+        <li>تسجيل حادث مع Coverage Check تلقائي</li>
+        <li>أنواع الحوادث: معروف / مجهول / مركبة واحدة...</li>
+        <li>رفع مستندات إلكترونية داخل ملف الحادث</li>
       </ul>
-      <p class="next">الخطوة التالية بعد موافقتك: <strong>المرحلة 2 — وثيقة التأمين + Coverage Check</strong></p>
+      <p class="next">بعد مراجعتك: ارفعي 2+3+4، وبعدين نكمل المرحلة 5</p>
     </div>
   `,
   styles: [`
@@ -28,10 +29,10 @@ import { RouterLink } from '@angular/router';
       border: 1px solid #e2e8f0;
       border-radius: 16px;
       padding: 1.5rem;
-      max-width: 720px;
+      max-width: 760px;
     }
     h2 { margin-top: 0; }
-    .actions { display: flex; gap: .75rem; margin: 1rem 0; }
+    .actions { display: flex; gap: .75rem; margin: 1rem 0; flex-wrap: wrap; }
     .actions a {
       background: #0b7a5a; color: white; text-decoration: none;
       padding: .7rem 1rem; border-radius: 10px;

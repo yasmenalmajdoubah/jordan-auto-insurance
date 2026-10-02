@@ -20,11 +20,17 @@ public class AccidentsController(
     DocumentService documents) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] AccidentStatus? status)
+    public async Task<IActionResult> GetAll([FromQuery] AccidentStatus? status, [FromQuery] string? q)
     {
-        var q = db.Accidents.Include(a => a.Policy).Include(a => a.Vehicle).AsQueryable();
-        if (status.HasValue) q = q.Where(a => a.Status == status);
-        return Ok(await q.OrderByDescending(a => a.Id).ToListAsync());
+        var query = db.Accidents.Include(a => a.Policy).Include(a => a.Vehicle).AsQueryable();
+        if (status.HasValue) query = query.Where(a => a.Status == status);
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(a =>
+                a.AccidentNumber.Contains(q) ||
+                a.Location.Contains(q) ||
+                a.DriverName.Contains(q) ||
+                (a.Vehicle != null && a.Vehicle.PlateNumber.Contains(q)));
+        return Ok(await query.OrderByDescending(a => a.Id).ToListAsync());
     }
 
     [HttpGet("{id:int}")]
@@ -74,6 +80,31 @@ public class AccidentsController(
         var check = await coverage.CheckAsync(entity.Id, User.Identity?.Name ?? "system");
         await audit.LogAsync("Create", nameof(Accident), entity.Id.ToString(), null, entity);
         return Ok(new { accident = entity, coverage = check });
+    }
+
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,AccidentOfficer,ClaimsOfficer,Manager")]
+    public async Task<IActionResult> Update(int id, [FromBody] AccidentDto dto)
+    {
+        var entity = await db.Accidents.FindAsync(id);
+        if (entity is null) return NotFound();
+        var old = new { entity.Status, entity.Liability, entity.Location };
+        entity.AccidentDateTime = dto.AccidentDateTime;
+        entity.Location = dto.Location;
+        entity.DriverName = dto.DriverName;
+        entity.DriverNationalId = dto.DriverNationalId;
+        entity.OtherPartyName = dto.OtherPartyName;
+        entity.OtherPartyInsurer = dto.OtherPartyInsurer;
+        entity.OtherPartyPolicyNumber = dto.OtherPartyPolicyNumber;
+        entity.OtherPartyPlateNumber = dto.OtherPartyPlateNumber;
+        entity.Description = dto.Description;
+        entity.LiabilityPercent = dto.LiabilityPercent;
+        entity.Liability = dto.Liability;
+        entity.AccidentType = dto.AccidentType;
+        entity.Status = dto.Status;
+        await db.SaveChangesAsync();
+        await audit.LogAsync("Update", nameof(Accident), id.ToString(), old, new { entity.Status, entity.Liability, entity.Location });
+        return Ok(entity);
     }
 
     [HttpPost("{id:int}/coverage-check")]
