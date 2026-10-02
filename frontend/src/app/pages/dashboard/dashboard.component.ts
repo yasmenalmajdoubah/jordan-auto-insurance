@@ -121,17 +121,17 @@ import { DashboardSummary } from '../../core/models/insurance.models';
   `,
   styles: [`
     .page { display: grid; gap: 1rem; }
-    .toolbar { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+    .toolbar { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
     h2, h3 { margin: 0; } p { margin: .25rem 0 0; color: #64748b; }
     .btn { border: 1px solid #cbd5e1; background: white; border-radius: 10px; padding: .6rem .9rem; cursor: pointer; }
-    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: .75rem; }
     .kpi {
       background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: .9rem;
       display: grid; gap: .35rem;
     }
     .kpi span { color: #64748b; font-size: .85rem; }
     .kpi strong { font-size: 1.25rem; color: #0f172a; }
-    .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
     .card {
       background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem;
       display: grid; gap: .65rem; align-content: start;

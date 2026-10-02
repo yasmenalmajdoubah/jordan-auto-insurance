@@ -99,7 +99,7 @@ import { ClaimRecord, Settlement } from '../../core/models/insurance.models';
     .page { display: grid; gap: 1rem; }
     .back { color: #0b7a5a; text-decoration: none; width: fit-content; }
     .head h2 { margin: 0; } .head p { margin: .3rem 0 0; color: #64748b; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; display: grid; gap: .55rem; }
     h3 { margin: 0; }
     a { color: #0b7a5a; text-decoration: none; }

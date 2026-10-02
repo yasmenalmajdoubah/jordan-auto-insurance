@@ -78,7 +78,7 @@ import { AuditLogEntry } from '../../core/models/insurance.models';
     .toolbar, .search { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
     h2 { margin: 0; } p { margin: .25rem 0 0; color: #64748b; }
     .search input, .search select { border: 1px solid #cbd5e1; border-radius: 10px; padding: .65rem .85rem; font: inherit; }
-    .search input { min-width: 240px; flex: 1; }
+    .search input { min-width: 0; width: 100%; flex: 1 1 200px; }
     .btn { border: 1px solid #cbd5e1; background: white; border-radius: 10px; padding: .65rem 1rem; cursor: pointer; }
     .table-wrap { background: white; border: 1px solid #e2e8f0; border-radius: 14px; overflow: auto; }
     table { width: 100%; border-collapse: collapse; }

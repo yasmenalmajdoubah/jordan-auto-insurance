@@ -74,7 +74,7 @@ import { RecoveryClaim } from '../../core/models/insurance.models';
     .head { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
     h2, h3 { margin: 0; } p { margin: .3rem 0 0; color: #64748b; }
     .hint { margin-bottom: .6rem !important; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; display: grid; gap: .6rem; align-content: start; }
     label { display: grid; gap: .3rem; color: #0f172a; font-size: .92rem; }
     input, select, textarea { border: 1px solid #cbd5e1; border-radius: 8px; padding: .55rem .7rem; font: inherit; }

@@ -254,14 +254,14 @@ import { Accident, CoverageResult, DamageSummary } from '../../core/models/insur
     h2, h3 { margin: 0; } p { margin: .3rem 0 0; color: #64748b; }
     .btn { border: 1px solid #cbd5e1; background: white; border-radius: 10px; padding: .6rem .9rem; cursor: pointer; text-decoration: none; color: inherit; width: fit-content; }
     .btn.primary { background: #0b7a5a; color: white; border-color: #0b7a5a; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; display: grid; gap: .55rem; align-content: start; }
     .card.wide { grid-column: 1 / -1; }
     a { color: #0b7a5a; text-decoration: none; }
     .box { border-radius: 10px; padding: .75rem; }
     .box.ok, .ok { color: #065f46; } .box.no, .no { color: #991b1b; }
     .box.ok { background: #ecfdf5; } .box.no { background: #fef2f2; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .55rem; align-items: center; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: .55rem; align-items: center; }
     input, select { border: 1px solid #cbd5e1; border-radius: 8px; padding: .55rem .7rem; font: inherit; }
     .check { display: flex; align-items: center; gap: .4rem; color: #0f172a; }
     .table-wrap { overflow: auto; }

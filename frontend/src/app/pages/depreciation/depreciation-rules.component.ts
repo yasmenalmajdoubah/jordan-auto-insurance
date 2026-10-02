@@ -109,6 +109,7 @@ import { DepreciationRule } from '../../core/models/insurance.models';
     td input[type="number"] { width: 80px; }
     .error { color: #b91c1c; } .ok { color: #065f46; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
   `]
 })
 export class DepreciationRulesComponent implements OnInit {

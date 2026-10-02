@@ -81,7 +81,7 @@ import { AppUser } from '../../core/models/insurance.models';
     .toolbar h2 { margin: 0; } .toolbar p { margin: .25rem 0 0; color: #64748b; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; display: grid; gap: .8rem; }
     h3 { margin: 0; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .55rem; align-items: center; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: .55rem; align-items: center; }
     input, select { border: 1px solid #cbd5e1; border-radius: 8px; padding: .55rem .7rem; font: inherit; width: 100%; }
     .btn { border: 1px solid #cbd5e1; background: white; border-radius: 10px; padding: .55rem .9rem; cursor: pointer; width: fit-content; }
     .btn.primary { background: #0b7a5a; color: white; border-color: #0b7a5a; }

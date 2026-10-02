@@ -99,12 +99,12 @@ import { CoverageCheckLog, CoverageResult, Policy } from '../../core/models/insu
   styles: [`
     .page { display: grid; gap: 1rem; }
     .back { color: #0b7a5a; text-decoration: none; width: fit-content; }
-    .head { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+    .head { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
     h2, h3 { margin: 0; } p { margin: .35rem 0 0; color: #64748b; }
     .hint { margin-bottom: .8rem !important; }
     .btn { border: 1px solid #cbd5e1; background: white; border-radius: 10px; padding: .65rem 1rem; text-decoration: none; color: inherit; cursor: pointer; width: fit-content; }
     .btn.primary { background: #0b7a5a; color: white; border-color: #0b7a5a; margin-top: .5rem; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; display: grid; gap: .55rem; align-content: start; }
     .card.wide { grid-column: 1 / -1; }
     label { display: grid; gap: .35rem; font-size: .92rem; color: #0f172a; }

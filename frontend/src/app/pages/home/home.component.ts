@@ -23,7 +23,9 @@ import { RouterLink } from '@angular/router';
       border: 1px solid #e2e8f0;
       border-radius: 16px;
       padding: 1.5rem;
-      max-width: 760px;
+      width: min(760px, 100%);
+      max-width: 100%;
+      box-sizing: border-box;
     }
     h2 { margin-top: 0; }
     .actions { display: flex; gap: .75rem; margin: 1rem 0 0; flex-wrap: wrap; }
