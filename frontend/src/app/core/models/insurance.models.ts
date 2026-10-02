@@ -168,10 +168,115 @@ export interface Accident {
   vehicle?: Vehicle | null;
   documents?: AccidentDocument[];
   coverageChecks?: CoverageCheckLog[];
+  damageItems?: DamageItem[];
+  payments?: AccidentPayment[];
+  injuries?: InjuryClaim[];
+  claims?: ClaimRecord[];
 }
 
 export interface CreateAccidentResponse {
   accident: Accident;
   coverage: CoverageResult;
+}
+
+export interface DamageItem {
+  id: number;
+  accidentId: number;
+  partName: string;
+  partNumber?: string | null;
+  damageType: string;
+  action: 'Repair' | 'Replace' | number;
+  partPrice: number;
+  laborCost: number;
+  paintCost: number;
+  discount: number;
+  depreciationPercent: number;
+  finalAmount: number;
+}
+
+export interface DamageSummary {
+  items: DamageItem[];
+  total: number;
+  parts: number;
+  labor: number;
+  paint: number;
+}
+
+export interface DepreciationRule {
+  id: number;
+  vehicleUsage?: string | number | null;
+  minAgeYears?: number | null;
+  maxAgeYears?: number | null;
+  partType?: string | null;
+  policyType?: string | number | null;
+  claimType?: string | null;
+  depreciationPercent: number;
+  notes?: string | null;
+  isActive: boolean;
+  updatedAt?: string;
+}
+
+export interface AccidentPayment {
+  id: number;
+  accidentId: number;
+  paymentType: string | number;
+  amount: number;
+  paidBy: string;
+  paidTo: string;
+  paymentDate: string;
+  paymentMethod: string;
+  receiptNumber?: string | null;
+  status: string | number;
+  notes?: string | null;
+}
+
+export interface InjuryClaim {
+  id: number;
+  accidentId: number;
+  injuredName: string;
+  nationalId?: string | null;
+  relationToAccident: string;
+  injuryType: string;
+  hospital?: string | null;
+  medicalReport?: string | null;
+  treatmentCost: number;
+  billsPaidBy?: string | null;
+  disabilityPercent: number;
+  downtimeDays: number;
+  injuryDate?: string | null;
+  recoveryDate?: string | null;
+  permanentDisability: boolean;
+  isFatal: boolean;
+  deathCertificateRef?: string | null;
+  beneficiaries?: string | null;
+  additionalExpenses: number;
+  compensationAmount: number;
+  paidAmount: number;
+  remainingAmount: number;
+}
+
+export interface Settlement {
+  id: number;
+  claimId: number;
+  claimAmount: number;
+  deductible: number;
+  otherAdjustments: number;
+  finalAmount: number;
+  status: string | number;
+  approvedBy?: string | null;
+  approvedAt?: string | null;
+}
+
+export interface ClaimRecord {
+  id: number;
+  claimNumber: string;
+  accidentId: number;
+  claimantType: string | number;
+  status: string | number;
+  claimAmount: number;
+  notes?: string | null;
+  createdAt?: string;
+  accident?: Accident | null;
+  settlement?: Settlement | null;
 }
 

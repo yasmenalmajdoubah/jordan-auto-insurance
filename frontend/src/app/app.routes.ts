@@ -16,6 +16,9 @@ import { PricingRulesComponent } from './pages/pricing/pricing-rules.component';
 import { AccidentsListComponent } from './pages/accidents/accidents-list.component';
 import { AccidentFormComponent } from './pages/accidents/accident-form.component';
 import { AccidentDetailComponent } from './pages/accidents/accident-detail.component';
+import { DepreciationRulesComponent } from './pages/depreciation/depreciation-rules.component';
+import { ClaimsListComponent } from './pages/claims/claims-list.component';
+import { ClaimDetailComponent } from './pages/claims/claim-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -38,9 +41,12 @@ export const routes: Routes = [
       { path: 'policies/:id/edit', component: PolicyFormComponent },
       { path: 'policies/:id', component: PolicyDetailComponent },
       { path: 'pricing', component: PricingRulesComponent },
+      { path: 'depreciation', component: DepreciationRulesComponent },
       { path: 'accidents', component: AccidentsListComponent },
       { path: 'accidents/new', component: AccidentFormComponent },
-      { path: 'accidents/:id', component: AccidentDetailComponent }
+      { path: 'accidents/:id', component: AccidentDetailComponent },
+      { path: 'claims', component: ClaimsListComponent },
+      { path: 'claims/:id', component: ClaimDetailComponent }
     ]
   },
   { path: '**', redirectTo: '' }

@@ -19,7 +19,9 @@ import { AuthService } from '../core/services/auth.service';
           <a routerLink="/vehicles" routerLinkActive="active">المركبات</a>
           <a routerLink="/policies" routerLinkActive="active">وثائق التأمين</a>
           <a routerLink="/pricing" routerLinkActive="active">قواعد التسعير</a>
+          <a routerLink="/depreciation" routerLinkActive="active">قواعد الاستهلاك</a>
           <a routerLink="/accidents" routerLinkActive="active">الحوادث</a>
+          <a routerLink="/claims" routerLinkActive="active">المطالبات</a>
         </nav>
         <button type="button" class="logout" (click)="auth.logout()">خروج</button>
       </aside>
@@ -27,7 +29,7 @@ import { AuthService } from '../core/services/auth.service';
         <header>
           <div>
             <h1>نظام تأمين المركبات</h1>
-            <p>المرحلة 3 و 4 — التسعير والحوادث</p>
+            <p>المرحلة 5 و 6 — الأضرار والمطالبات</p>
           </div>
           @if (auth.currentUser(); as u) {
             <div class="user">{{ u.fullName }} · {{ u.role }}</div>

@@ -3,15 +3,22 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   Accident,
   AccidentDocument,
+  AccidentPayment,
+  ClaimRecord,
   CoverageCheckLog,
   CoverageResult,
   CreateAccidentResponse,
+  DamageItem,
+  DamageSummary,
+  DepreciationRule,
   DocumentType,
+  InjuryClaim,
   Insured,
   InsuredProfile,
   Policy,
   PremiumCalculationResult,
   PricingRule,
+  Settlement,
   Vehicle,
   VehicleProfile
 } from '../models/insurance.models';
@@ -155,5 +162,53 @@ export class ApiService {
 
   documentDownloadUrl(id: number) {
     return `${this.base}/documents/${id}/download`;
+  }
+
+  getDepreciationRules() {
+    return this.http.get<DepreciationRule[]>(`${this.base}/rules/depreciation`);
+  }
+
+  saveDepreciationRule(body: Partial<DepreciationRule>) {
+    return this.http.post<DepreciationRule>(`${this.base}/rules/depreciation`, body);
+  }
+
+  addDamage(accidentId: number, body: any) {
+    return this.http.post<DamageItem>(`${this.base}/accidents/${accidentId}/damage`, body);
+  }
+
+  getDamageSummary(accidentId: number) {
+    return this.http.get<DamageSummary>(`${this.base}/accidents/${accidentId}/damage-summary`);
+  }
+
+  addPayment(accidentId: number, body: any) {
+    return this.http.post<AccidentPayment>(`${this.base}/accidents/${accidentId}/payments`, body);
+  }
+
+  addInjury(accidentId: number, body: any) {
+    return this.http.post<InjuryClaim>(`${this.base}/accidents/${accidentId}/injuries`, body);
+  }
+
+  getClaims() {
+    return this.http.get<ClaimRecord[]>(`${this.base}/claims`);
+  }
+
+  getClaim(id: number) {
+    return this.http.get<ClaimRecord>(`${this.base}/claims/${id}`);
+  }
+
+  createClaim(body: any) {
+    return this.http.post<ClaimRecord>(`${this.base}/claims`, body);
+  }
+
+  createSettlement(claimId: number, body: any) {
+    return this.http.post<Settlement>(`${this.base}/claims/${claimId}/settlement`, body);
+  }
+
+  approveSettlement(settlementId: number) {
+    return this.http.post<Settlement>(`${this.base}/claims/settlements/${settlementId}/approve`, {});
+  }
+
+  downloadSettlementPdf(settlementId: number) {
+    return this.http.get(`${this.base}/claims/settlements/${settlementId}/pdf`, { responseType: 'blob' });
   }
 }
